@@ -1,0 +1,27 @@
+{
+	"name": "chunker/reviews",
+	"type": "package",
+	"description": "Пакет для работы с отзывами",
+	"authors": [
+		{
+			"name": "Studio 2i",
+			"email": "mail@studio2i.ru",
+			"homepage": "studio2i.ru",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"chunker/base": "~2.4"
+	},
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "git@bitbucket.org:chunker/base.git"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"Chunker\\Reviews\\": "app"
+		}
+	}
+}

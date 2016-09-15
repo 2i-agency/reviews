@@ -47,7 +47,7 @@
 				<div class="col-xs-2">
 					@include('chunker.base::admin.utils.inputs.timepicker', [
 						'name' => 'published_at',
-						'value' => old('published_at')
+						'value' => is_array(old('published_at')) ? null : old('published_at')
 					])
 				</div>
 
@@ -107,7 +107,7 @@
 									<td>
 										@include('chunker.base::admin.utils.inputs.timepicker', [
 											'name' => 'published_at[' . $item->id . ']',
-											'value' => old('published_at') ?: (isset($item->published_at) ? $item->published_at : NULL)
+											'value' => old('published_at')[$item->id] ?: (isset($item->published_at) ? $item->published_at : NULL)
 										])
 									</td>
 								@else

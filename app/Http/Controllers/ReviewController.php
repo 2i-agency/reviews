@@ -7,25 +7,29 @@ use App\Http\Requests;
 use Chunker\HousesProjects\Models\Type;
 use Chunker\Reviews\Models\Review;
 use Illuminate\Http\Request;
+use \Validator;
 
 class ReviewController extends Controller
 {
 	
 	// Правило валидации
 	protected $rules = [
-		'name' => 'required'
+		'name'       => 'required|max:150|unique:reviews_reviews,name',
+		'message'    => 'required',
 	];
 
 	// Сообщения об ошибках
 	protected $validateMessages = [
-		'name.require'     => 'Необходимо указать имя',
-		'names.*.require'     => 'Необходимо указать имя',
+		'name.require'       => 'Необходимо указать имя',
+		'name.unique'        => 'Такое имя уже существует',
+		'name.max'           => 'Превышено количество символов',
+		'message.require'    => 'Необходимо указать текст сообщения',
 	];
 
 	// Сообщения для flash()
 	protected $flashMessages = [
 		'store' => 'Отзыв добавлен',
-		'save' => 'Отзывы сохранены'
+		'save'  => 'Отзывы сохранены'
 	];
 	
 	// Класс модели
@@ -89,6 +93,30 @@ class ReviewController extends Controller
 		$published_at = $request->published_at;
 
 		foreach ($names as $id => $name) {
+			$rules = [
+				'name'    => 'required|max:150|unique:reviews_reviews,name,' . $id,
+				'message' => 'required'
+			];
+
+			$validate_messages = [
+				'name.require'    => 'Необходимо указать имя',
+				'name.unique'     => 'Имя <b>' . $name . '</b> уже существует',
+				'name.max'        => 'Превышено количество символов',
+				'message.require' => 'Необходимо указать текст сообщения',
+			];
+
+			$validate = Validator::make([
+				'name'    => $name,
+				'message' => $messages[$id]
+			],
+				$rules, $validate_messages);
+
+			if ($validate->fails())
+			{
+				return redirect()->back()->withErrors($validate->errors());
+			}
+
+//			$this->validate($request, $rules, $validate_messages);
 
 			$model::find($id)->update([
 				'name'         => $name,

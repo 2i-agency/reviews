@@ -4,7 +4,6 @@ namespace Chunker\Reviews\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
-use Chunker\HousesProjects\Models\Type;
 use Chunker\Reviews\Models\Review;
 use Illuminate\Http\Request;
 use \Validator;

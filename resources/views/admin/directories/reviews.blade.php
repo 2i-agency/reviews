@@ -105,9 +105,19 @@
 									</td>
 
 									<td>
+										@php
+											if(is_array(old('published_at'))){
+												$published_at_value = old('published_at')[$item->id];
+											} elseif(old('published_at') !== null) {
+												$published_at_value = old('published_at');
+											} else {
+												$published_at_value = isset($item->published_at) ? $item->published_at : NULL;
+											}
+										@endphp
+
 										@include('chunker.base::admin.utils.inputs.timepicker', [
 											'name' => 'published_at[' . $item->id . ']',
-											'value' => old('published_at')[$item->id] ?: (isset($item->published_at) ? $item->published_at : NULL)
+											'value' => $published_at_value
 										])
 									</td>
 								@else

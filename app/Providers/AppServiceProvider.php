@@ -45,6 +45,28 @@ class AppServiceProvider extends ServiceProvider
 		// Маршруты пакета
 		require_once static::ROOT . '/app/Http/routes/admin.php';
 
+		// Публикация файлов для пакета Structure
+		$this->publishes([
+
+			// admin
+			static::ROOT . '/assets/admin/ReviewController.php' =>
+				app_path('Http/Controllers/Admin/Structure/ReviewController.php'),
+
+			static::ROOT . '/assets/admin/routes.php' =>
+				app_path('Http/routes/admin/reviews.php'),
+
+			//site
+			static::ROOT . '/assets/site/ReviewController.php' =>
+				app_path('Http/Controllers/Site/ReviewController.php'),
+
+			static::ROOT . '/assets/site/reviews.blade.php' =>
+				resource_path('views/site/reviews.blade.php'),
+
+			static::ROOT . '/assets/site/routes.php' =>
+				app_path('Http/routes/site/reviews.php')
+
+		], 'app');
+
 	}
 
 

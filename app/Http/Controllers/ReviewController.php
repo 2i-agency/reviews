@@ -10,58 +10,14 @@ use \Validator;
 
 class ReviewController extends Controller
 {
-	
-	// Правило валидации
-	protected $rules = [
-		'name'       => 'required|max:150|unique:reviews_reviews,name',
-		'message'    => 'required',
-	];
-
-	// Сообщения об ошибках
-	protected $validateMessages = [
-		'name.require'       => 'Необходимо указать имя',
-		'name.unique'        => 'Такое имя уже существует',
-		'name.max'           => 'Превышено количество символов',
-		'message.require'    => 'Необходимо указать текст сообщения',
-	];
-
-	// Сообщения для flash()
-	protected $flashMessages = [
-		'store' => 'Отзыв добавлен',
-		'save'  => 'Отзывы сохранены'
-	];
-	
-	// Класс модели
-	protected $model = Review::class;
-
-	// Абилки
-	protected $abilities = [
-		'view' => 'reviews.view',
-		'edit' => 'reviews.edit'
-	];
-	
-	// Вьюха
-	protected $view = 'chunker.reviews::admin.directories.reviews';
-
 	/*
 	 * Отображение
 	 */
 	function index() {
-		$this->authorize($this->abilities['view']);
+		$this->authorize('reviews.view');
+		$reviews = Review::OrderBy('published_at')->get();
 
-		$model = $this->model;
-
-		return view($this->view, [
-			'directory' => $model::OrderBy('published_at')->get(),
-			'title' => 'Отзывы',
-			'title_new' => 'Новый отзыв',
-			'ability_edit' => 'reviews.edit',
-			'route' => [
-				'store'       => 'admin.reviews.store',
-				'save'        => 'admin.reviews.save',
-			],
-			'empty' => 'Отзывы отсутствуют',
-		]);
+		return view('reviews::reviews', compact('reviews'));
 	}
 
 
@@ -69,13 +25,12 @@ class ReviewController extends Controller
 	 * Добавление
 	 */
 	function store(Request $request) {
-		$this->authorize($this->abilities['edit']);
+		$this->authorize('reviews.edit');
 		$this->validate($request, $this->rules, $this->validateMessages);
+		Review::create($request->all());
 
-		$model = $this->model;
-		$model::create($request->all());
+		flash()->success('Отзыв добавлен');
 
-		flash()->success($this->flashMessages['store']);
 		return back();
 	}
 
@@ -84,14 +39,10 @@ class ReviewController extends Controller
 	 * Обновление списка
 	 */
 	function save(Request $request) {
-		$this->authorize($this->abilities['edit']);
+		$this->authorize('reviews.edit');
+		$reviews = $request->get('reviews');
 
-		$model = $this->model;
-		$names = $request->names;
-		$messages = $request->messages;
-		$published_at = $request->published_at;
-
-		foreach ($names as $id => $name) {
+		foreach ($reviews as $id => $data) {
 			$rules = [
 				'name'    => 'required|max:150|unique:reviews_reviews,name,' . $id,
 				'message' => 'required'
@@ -99,33 +50,23 @@ class ReviewController extends Controller
 
 			$validate_messages = [
 				'name.require'    => 'Необходимо указать имя',
-				'name.unique'     => 'Имя <b>' . $name . '</b> уже существует',
+				'name.unique'     => 'Имя <b>' . $data[ 'name' ] . '</b> уже существует',
 				'name.max'        => 'Превышено количество символов',
 				'message.require' => 'Необходимо указать текст сообщения',
 			];
 
-			$validate = Validator::make([
-				'name'    => $name,
-				'message' => $messages[$id]
-			],
-				$rules, $validate_messages);
+			$validate = Validator::make($data, $rules, $validate_messages);
 
-			if ($validate->fails())
-			{
+			if ($validate->fails()) {
 				return redirect()->back()->withErrors($validate->errors());
 			}
 
-//			$this->validate($request, $rules, $validate_messages);
-
-			$model::find($id)->update([
-				'name'         => $name,
-				'message'      => $messages[$id],
-				'published_at' => isset($published_at[$id]) ? $published_at[$id] : ''
-			]);
+			Review::find($id)->update($data);
 
 		}
 
-		flash()->success($this->flashMessages['save']);
+		flash()->success('Отзывы сохранены');
+
 		return back();
 	}
 }

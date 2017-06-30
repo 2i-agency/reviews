@@ -9,7 +9,7 @@ class CreateReviewsReviews extends Migration
 	protected $table = 'reviews_reviews';
 
 	public function up() {
-		Schema::create($this->table, function (Blueprint $table) {
+		Schema::create($this->table, function(Blueprint $table) {
 
 			$table->engine = 'MyISAM';
 			$table->comment = 'Отзывы';

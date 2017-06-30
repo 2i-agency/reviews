@@ -3,69 +3,56 @@
 namespace Chunker\Reviews\Providers;
 
 use Chunker\Base\Packages\Package;
+use Chunker\Base\Providers\Traits\Migrator;
+use Chunker\Reviews\Models\Review;
 use Illuminate\Support\ServiceProvider;
 
 
 class AppServiceProvider extends ServiceProvider
 {
-	// Корневая папка пакета
+	use Migrator;
+
+	/** Корневая папка пакета */
 	const ROOT = __DIR__ . '/../..';
 
 
 	public function boot(Package $package) {
-
-		// Конфигурация пакета
+		/** Конфигурация пакета */
 		$package
 			->setName('reviews')
 			->registerAbilities([
-
 				'reviews.edit' => 'Редактирование отзывов',
 				'reviews.view' => 'Просмотр отзывов',
-
 			])
 			->registerAbilitiesViews([
-
-				'chunker.reviews::admin.abilities.reviews'
-
+				'reviews::abilities.reviews',
+			])
+			->registerMenuItems([
+				'reviews' => [
+					'name'   => 'Отзывы',
+					'icon'   => 'comments',
+					'route'  => 'admin.reviews',
+					'policy' => 'reviews.view'
+				]
+			])
+			->registerActivityElements([
+				Review::class => 'reviews::entities.review'
 			]);
 
-
-		// Регистрация пакета
+		/** Регистрация пакета */
 		$this
-			->app['Packages']
+			->app[ 'Packages' ]
 			->register($package);
 
 
-		// Шаблоны пакета
-		$this->loadViewsFrom(static::ROOT . '/resources/views', 'chunker.reviews');
+		/** Объявление пространства имён представлений пакета */
+		$this->loadViewsFrom(static::ROOT . '/resources/views', 'reviews');
 
-		// Публикация миграций
-		$this->publishes([static::ROOT . '/database/migrations' => database_path('migrations')], 'database');
+		/** Публикация необходимых файлов */
+		$this->publish(static::ROOT . '/publishes/');
 
 		// Маршруты пакета
-		require_once static::ROOT . '/app/Http/routes/admin.php';
-
-		// Публикация файлов для пакета Structure
-		$this->publishes([
-
-			// admin
-			static::ROOT . '/assets/admin/ReviewController.php' =>
-				app_path('Http/Controllers/Admin/Structure/ReviewController.php'),
-
-			static::ROOT . '/assets/admin/routes.php' =>
-				app_path('Http/routes/admin/reviews.php'),
-
-			//site
-			static::ROOT . '/assets/site/ReviewController.php' =>
-				app_path('Http/Controllers/Site/ReviewController.php'),
-
-			static::ROOT . '/assets/site/reviews.blade.php' =>
-				resource_path('views/site/reviews.blade.php'),
-
-			static::ROOT . '/assets/site/routes.php' =>
-				app_path('Http/routes/site/reviews.php')
-
-		], 'app');
+		require_once static::ROOT . '/app/Http/routes.php';
 
 	}
 

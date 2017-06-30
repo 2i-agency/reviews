@@ -11,7 +11,7 @@
 		}
 	],
 	"require": {
-		"chunker/base": "~2.4"
+		"chunker/base": "~3.0"
 	},
 	"repositories": [
 		{

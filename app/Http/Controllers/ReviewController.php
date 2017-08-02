@@ -26,8 +26,22 @@ class ReviewController extends Controller
 	 */
 	function store(Request $request) {
 		$this->authorize('reviews.edit');
-		$this->validate($request, $this->rules, $this->validateMessages);
-		Review::create($request->all());
+		$data = $request->all();
+
+		$rules = [
+			'name'    => 'required|max:150|unique:reviews_reviews,name',
+			'message' => 'required'
+		];
+
+		$validate_messages = [
+			'name.require'    => 'Необходимо указать имя',
+			'name.unique'     => 'Имя <b>' . $data[ 'name' ] . '</b> уже существует',
+			'name.max'        => 'Превышено количество символов',
+			'message.require' => 'Необходимо указать текст сообщения',
+		];
+
+		$this->validate($request, $rules, $validate_messages);
+		Review::create($data);
 
 		flash()->success('Отзыв добавлен');
 

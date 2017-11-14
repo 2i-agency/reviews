@@ -28,19 +28,6 @@ class ReviewController extends Controller
 		$this->authorize('reviews.edit');
 		$data = $request->all();
 
-		$rules = [
-			'name'    => 'required|max:150|unique:reviews_reviews,name',
-			'message' => 'required'
-		];
-
-		$validate_messages = [
-			'name.require'    => 'Необходимо указать имя',
-			'name.unique'     => 'Имя <b>' . $data[ 'name' ] . '</b> уже существует',
-			'name.max'        => 'Превышено количество символов',
-			'message.require' => 'Необходимо указать текст сообщения',
-		];
-
-		$this->validate($request, $rules, $validate_messages);
 		Review::create($data);
 
 		flash()->success('Отзыв добавлен');
@@ -57,23 +44,6 @@ class ReviewController extends Controller
 		$reviews = $request->get('reviews');
 
 		foreach ($reviews as $id => $data) {
-			$rules = [
-				'name'    => 'required|max:150|unique:reviews_reviews,name,' . $id,
-				'message' => 'required'
-			];
-
-			$validate_messages = [
-				'name.require'    => 'Необходимо указать имя',
-				'name.unique'     => 'Имя <b>' . $data[ 'name' ] . '</b> уже существует',
-				'name.max'        => 'Превышено количество символов',
-				'message.require' => 'Необходимо указать текст сообщения',
-			];
-
-			$validate = Validator::make($data, $rules, $validate_messages);
-
-			if ($validate->fails()) {
-				return redirect()->back()->withErrors($validate->errors());
-			}
 
 			Review::find($id)->update($data);
 

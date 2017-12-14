@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
 				]
 			])
 			->registerActivityElements([
-				Review::class => 'reviews::entities.review'
+				Review::class => 'activity-reviews::entities.reviews'
 			]);
 
 		/** Регистрация пакета */
@@ -47,6 +47,9 @@ class AppServiceProvider extends ServiceProvider
 
 		/** Объявление пространства имён представлений пакета */
 		$this->loadViewsFrom(static::ROOT . '/resources/views', 'reviews');
+
+		/** Добавление файлов локализации в пространство имен */
+		$this->loadTranslationsFrom(static::ROOT . '/resources/lang', 'activity-reviews');
 
 		/** Публикация необходимых файлов */
 		$this->publish(static::ROOT . '/publishes/');

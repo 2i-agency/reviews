@@ -93,15 +93,13 @@
 							</td>
 
 							<td>
-								<input
-									type="text"
+								<textarea
 									name="reviews[{{ $review->id }}][message]"
-									value="{{ old('messages.' . $review->id) ?: $review->message }}"
 									required
-									autocomplete="off"
+									rows="3"
 									placeholder="Текст сообщения"
 									class="form-control"
-								>
+								>{{ old('messages.' . $review->id) ?: $review->message }}</textarea>
 							</td>
 
 							<td>

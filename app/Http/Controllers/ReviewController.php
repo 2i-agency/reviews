@@ -42,12 +42,17 @@ class ReviewController extends Controller
 	function save(Request $request) {
 		$this->authorize('reviews.edit');
 		$reviews = $request->get('reviews');
+		$delete = $request->input('delete');
 
 		foreach ($reviews as $id => $data) {
 
-			Review::find($id)->update($data);
+			if (!in_array($id, $delete)) {
+				Review::find($id)->update($data);
+			}
 
 		}
+
+		Review::whereIn('id', $request->input('delete'))->delete();
 
 		flash()->success('Отзывы сохранены');
 

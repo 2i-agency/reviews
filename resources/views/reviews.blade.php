@@ -120,6 +120,13 @@
 									'value' => $published_at_value
 								])
 							</td>
+							<td>
+								<div class="checkbox">
+									<label>
+										<input name="delete[]" value="{{ $review->id }}" type="checkbox"> Удалить
+									</label>
+								</div>
+							</td>
 						@else
 							<td>{{ old('names.' . $review->id) ?: $review->name }}</td>
 							<td>{{ old('message.' . $review->id) ?: $review->message }}</td>

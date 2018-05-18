@@ -26,9 +26,21 @@ class ReviewController extends Controller
 	 */
 	function store(Request $request) {
 		$this->authorize('reviews.edit');
-		$data = $request->all();
 
-		Review::create($data);
+		$review = Review::create($request->all());
+
+		if ($request->hasFile('image')) {
+			$file = $request->file('image');
+			if ($file->isValid()) {
+				$original_extension = $file->getClientOriginalExtension();
+
+				$review
+					->copyMedia($file)
+					->setFileName('original.' . $original_extension)
+					->toCollectionOnDisk();
+
+			}
+		}
 
 		flash()->success('Отзыв добавлен');
 
@@ -43,11 +55,33 @@ class ReviewController extends Controller
 		$this->authorize('reviews.edit');
 		$reviews = $request->get('reviews');
 		$delete = $request->input('delete', []);
+		$images = $request->file('imagesUpload');
+		$delete_images = $request->input('imagesDelete');
 
 		foreach ($reviews as $id => $data) {
 
 			if (!in_array($id, $delete)) {
-				Review::find($id)->update($data);
+				/** @var Review $review */
+				$review = Review::find($id);
+
+				$review->update($data);
+
+				if (
+					key_exists($review->id, $images) && $review->media()->count() ||
+					is_array($delete_images) &&	key_exists($review->id, $delete_images)
+				) {
+					$review->clearMediaCollection();
+				}
+
+				if (key_exists($review->id, $images) && $images [ $review->id ]) {
+					$file = $images[ $review->id ];
+					$original_extension = $file->getClientOriginalExtension();
+
+					$review
+						->copyMedia($file)
+						->setFileName('original.' . $original_extension)
+						->toCollectionOnDisk();
+				}
 			}
 
 		}

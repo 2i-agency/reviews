@@ -24,6 +24,9 @@ class Review extends Model implements HasMediaConversions
 		'published_at'
 	];
 
+	/** @var string Переменная для указания списка конверсий */
+	protected $conversions_config = 'chunker.reviews.conversions';
+
 	public $timestamps = false;
 
 }

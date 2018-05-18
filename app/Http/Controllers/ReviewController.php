@@ -67,8 +67,11 @@ class ReviewController extends Controller
 				$review->update($data);
 
 				if (
-					key_exists($review->id, $images) && $review->media()->count() ||
-					is_array($delete_images) &&	key_exists($review->id, $delete_images)
+					key_exists($review->id, $images) &&
+					$images[ $review->id ] &&
+					$review->media()->count() ||
+					is_array($delete_images) &&
+					key_exists($review->id, $delete_images)
 				) {
 					$review->clearMediaCollection();
 				}

@@ -29,7 +29,7 @@ class ReviewController extends Controller
 
 		$review = Review::create($request->all());
 
-		if ($request->hasFile('image')) {
+		if (config('chunker.reviews.icon') && $request->hasFile('image')) {
 			$file = $request->file('image');
 			if ($file->isValid()) {
 				$original_extension = $file->getClientOriginalExtension();
@@ -67,6 +67,8 @@ class ReviewController extends Controller
 				$review->update($data);
 
 				if (
+					config('chunker.reviews.icon') &&
+					isset($images) &&
 					key_exists($review->id, $images) &&
 					$images[ $review->id ] &&
 					$review->media()->count() ||
@@ -76,7 +78,12 @@ class ReviewController extends Controller
 					$review->clearMediaCollection();
 				}
 
-				if (key_exists($review->id, $images) && $images [ $review->id ]) {
+				if (
+					config('chunker.reviews.icon') &&
+					isset($images) &&
+					key_exists($review->id, $images) &&
+					$images [ $review->id ]
+				) {
 					$file = $images[ $review->id ];
 					$original_extension = $file->getClientOriginalExtension();
 

@@ -85,7 +85,7 @@
 
 			<div class="flex-row">
 				@foreach ($reviews as $review)
-					<div data-id="{{ $review->id }}" class="flex-col-sm-3">
+					<div data-id="{{ $review->id }}" class="flex-col-lg-3 flex-col-md-4 flex-col-sm-6 flex-col-xs-12">
 						<div class="panel panel-default">
 
 							<div class="panel-body">
